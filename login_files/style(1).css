@@ -86,7 +86,7 @@ body {
     --bs-purple: #673ab7;
     --bs-pink: #e83e8c;
     --bs-red: #dc2626;
-    --bs-orange: #0c34f0;
+    --bs-orange: #0fef9e;
     --bs-yellow: #e58a00;
     --bs-green: #2ca87f;
     --bs-teal: #008080;
@@ -22465,11 +22465,11 @@ div.dt-container div.dt-info~div.dt-paging {
 }
 
 .bg-orange-500 {
-    background: #0c34f0
+    background: #0fef9e
 }
 
 .text-orange-500 {
-    color: #0c34f0
+    color: #0fef9e
 }
 
 .bg-orange-600 {
@@ -24062,19 +24062,19 @@ pre[class*=language-] {
 }
 
 [data-pc-layout=color-header] a.preset.preset-6 {
-    background: #0c34f0
+    background: #0fef9e
 }
 
 [data-pc-layout=color-header] a.preset.preset-gradient-6 {
-    background: linear-gradient(to right, #0c34f0 0, #fd9a47 100%)
+    background: linear-gradient(to right, #0fef9e 0, #fd9a47 100%)
 }
 
 [data-pc-layout=color-header].preset-6 {
-    --pc-layout-2-color: #0c34f0
+    --pc-layout-2-color: #0fef9e
 }
 
 [data-pc-layout=color-header].preset-gradient-6 {
-    --pc-layout-2-color: linear-gradient(to right, #0c34f0 0%, #fd9a47 100%)
+    --pc-layout-2-color: linear-gradient(to right, #0fef9e 0%, #fd9a47 100%)
 }
 
 [data-pc-layout=color-header] a.preset.preset-7 {
@@ -35483,7 +35483,7 @@ div.dataTables_wrapper div.dt-row {
 }
 
 .theme-color.preset-color>a[data-value=preset-6] {
-    background: #0c34f0
+    background: #0fef9e
 }
 
 .theme-color.preset-color>a[data-value=preset-7] {
