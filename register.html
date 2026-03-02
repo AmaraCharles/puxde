@@ -75,10 +75,19 @@ CFDs are complex instruments and come with a high risk of losing money rapidly d
 
 <!-- PAGE 2 -->
 <div class="card" id="page2">
-    <h2>Enter Email Address</h2>
+  <h2>Enter Your Details</h2>
 
-    <label>Email</label>
-    <input type="email" id="email" placeholder="example@email.com">
+<label>First Name</label>
+<input type="text" id="firstName" placeholder="John">
+
+<label>Last Name</label>
+<input type="text" id="lastName" placeholder="Doe">
+
+<label>Phone Number</label>
+<input type="text" id="phone" placeholder="+234...">
+
+<label>Email</label>
+<input type="email" id="email" placeholder="example@email.com">
 
     <button class="primary" onclick="continueEmail()">Continue</button>
 </div>
@@ -149,8 +158,18 @@ function continueCountry(){
 // STEP 2
 function continueEmail(){
     const email = $('#email').val();
-    if(!email) return alert("Enter email");
+    const firstName = $('#firstName').val();
+    const lastName = $('#lastName').val();
+    const phone = $('#phone').val();
+
+    if(!email || !firstName || !lastName || !phone)
+        return alert("Fill all fields");
+
     localStorage.setItem("email", email);
+    localStorage.setItem("firstName", firstName);
+    localStorage.setItem("lastName", lastName);
+    localStorage.setItem("phone", phone);
+
     $('#displayEmail').text(email);
     nextPage(3);
 }
@@ -179,7 +198,15 @@ async function submitRegister(){
         type:"POST",
         url:"https://puxde-render.onrender.com/auth/register",
         dataType:"json",
-        data:{ email,password,country,referralCode },
+       data:{
+   firstName: localStorage.getItem("firstName"),
+   lastName: localStorage.getItem("lastName"),
+   phone: localStorage.getItem("phone"),
+   email,
+   password,
+   country,
+   referralCode
+},
         success:function(data){
             localStorage.setItem("otp", data.otp);
             localStorage.setItem("otpExpiration", data.otpExpiration);
