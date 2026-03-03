@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pruxde - Copy Trading & Investment Platform</title>
     <meta name="description" content="Advanced copy trading platform with real-time forex, crypto, and stock trading. Follow master traders and grow your portfolio with pruxde.">
-    <link rel="stylesheet" href="./styles.css">
-    <script src="./app.js"></script>
-
-     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -474,23 +472,19 @@
 
                 /* ── Layout: make main-content a scrollable column so
                    header + content + footer all scroll together ── */
-                /* ── Layout fix: footer scrolls with page on all screen sizes ── */
-.main-content {
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto !important;
-    overflow-x: hidden;
-    height: 100%;
-}
-#content {
-    flex: 1 1 auto !important;   /* grows to fill space — DO NOT set flex:none */
-    overflow-y: auto;
-    min-height: 0;
-}
-.app-footer {
-    flex-shrink: 0;
-    margin-top: auto;
-}
+                .main-content {
+                    overflow-y: auto !important;
+                    overflow-x: hidden;
+                }
+                /* #content must NOT be the scroller anymore */
+                #content {
+                    overflow-y: visible !important;
+                    flex: none !important;
+                    min-height: 0;
+                }
+                .app-footer {
+                    flex-shrink: 0;
+                }
             </style>
 
             </footer><!-- end app-footer -->
