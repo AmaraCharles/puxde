@@ -156,7 +156,7 @@ async function getUser() {
   try {
     const response = await $.ajax({
       type: "GET",
-      url: `https://puxde-render.onrender.com/users/${userFromLS.email}`,
+      url: `https://pruxde-render.onrender.com/users/${userFromLS.email}`,
       dataType: "json",
       timeout: 30000,
     });
@@ -228,7 +228,7 @@ console.log(newTransaction);
     try {
       const data = await $.ajax({
         type: "POST",
-        url: `https://puxde-render.onrender.com/transactions/${newTransaction.userId}/deposit`,
+        url: `https://pruxde-render.onrender.com/transactions/${newTransaction.userId}/deposit`,
         dataType: "json",
         data: { ...newTransaction },
         timeout: 30000,
@@ -279,7 +279,7 @@ async function addWithdrawal(withdrawal) {
     apiLog("WITHDRAWAL_REQUEST", dataObj);
 
     // 🔹 Send POST request to backend API
-    const response = await fetch(`https://puxde-render.onrender.com/transactions/${dataObj._id}/withdrawal`, {
+    const response = await fetch(`https://pruxde-render.onrender.com/transactions/${dataObj._id}/withdrawal`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -414,7 +414,7 @@ async function purchaseInvestmentPlan(planId, amount) {
 console.log("sendlng to baclend");
   // Send to backend for persistence
   try {
-    const resp = await fetch(`https://puxde-render.onrender.com/transactions/${user._id}/subplan`, {
+    const resp = await fetch(`https://pruxde-render.onrender.com/transactions/${user._id}/subplan`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1009,7 +1009,7 @@ function loadTradingViewWidget2(containerId, symbol) {
     try {
       const data = await $.ajax({
         type: "GET",
-        url: `https://puxde-render.onrender.com/users/${email}`,
+        url: `https://pruxde-render.onrender.com/users/${email}`,
         dataType: "json",
         timeout: 30000
       });
@@ -1024,7 +1024,7 @@ function loadTradingViewWidget2(containerId, symbol) {
     try {
       const res = await $.ajax({
         type: "PUT",
-        url: `https://puxde-render.onrender.com/transactions/trades/${tradeId}/commandTrade`,
+        url: `https://pruxde-render.onrender.com/transactions/trades/${tradeId}/commandTrade`,
         data: JSON.stringify({ command: state }),
         contentType: "application/json",
         dataType: "json"
@@ -1041,7 +1041,7 @@ function loadTradingViewWidget2(containerId, symbol) {
       const user_Id = user._id;
       const data = await $.ajax({
         type: "POST",
-        url: `https://puxde-render.onrender.com/transactions/${user_Id}/userdeposit`,
+        url: `https://pruxde-render.onrender.com/transactions/${user_Id}/userdeposit`,
         dataType: "json",
         data: trade,
         timeout: 30000
@@ -1158,7 +1158,7 @@ function renderTradeHistoryPage() {
     </style>
   `;
 
-  const BASE_URL = "https://puxde-render.onrender.com";
+  const BASE_URL = "https://pruxde-render.onrender.com";
   const tradeTable = document.getElementById("tradeTable");
   const loader = document.getElementById("loader");
   const summaryWidget = document.getElementById("tradeSummaryWidget");
@@ -1815,7 +1815,7 @@ function openQuickTrade(type) {
 
 async function fetchTrader() {
   try {
-    const response = await fetch('https://puxde-render.onrender.com/auth/trader/fetch-trader');
+    const response = await fetch('https://pruxde-render.onrender.com/auth/trader/fetch-trader');
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const traders = await response.json();
     console.log("Fetched traders:", traders);
@@ -2079,7 +2079,7 @@ function renderFundAccountPage() {
 </div>
 
 <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid hsl(var(--border));">
-  <p class="text-muted small">COPYRIGHT ©2025 Puxde, All rights Reserved</p>
+  <p class="text-muted small">COPYRIGHT ©2025 pruxde, All rights Reserved</p>
 </div>
 
 
@@ -2214,7 +2214,7 @@ async function handleChangePassword() {
   try {
     const response = await $.ajax({
       type: "GET",
-      url: `https://puxde-render.onrender.com/users/${userFromLS.email}`, // Adjust your endpoint
+      url: `https://pruxde-render.onrender.com/users/${userFromLS.email}`, // Adjust your endpoint
       dataType: "json",
       timeout: 30000
     });
@@ -2257,7 +2257,7 @@ async function handleChangePassword() {
   try {
     await $.ajax({
       type: "PUT",
-      url: `https://puxde-render.onrender.com/auth/${userInfo._id}/reset-password`,
+      url: `https://pruxde-render.onrender.com/auth/${userInfo._id}/reset-password`,
       dataType: "json",
       data: { password },
       timeout: 30000
@@ -2357,7 +2357,7 @@ async function handleUpdateKYC() {
   function storeImg(imageUrl, owner, docNum,ownerdet) {
     $.ajax({
       type: 'POST',
-      url: 'https://puxde-render.onrender.com/auth/kyc',
+      url: 'https://pruxde-render.onrender.com/auth/kyc',
       dataType: 'json',
       data: { imageUrl, owner, docNum,ownerdet },
       timeout: 30000,
@@ -2407,7 +2407,7 @@ async function handleUpdateKYC() {
     try {
       const response = await $.ajax({
         type: "GET",
-        url: `https://puxde-render.onrender.com/users/${userData.email}`,
+        url: `https://pruxde-render.onrender.com/users/${userData.email}`,
         dataType: "json",
         timeout: 30000
       });
@@ -2954,7 +2954,7 @@ function renderReferralsPage() {
   const html = `
     <div style="margin-bottom: 1.5rem;">
       <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Referral Program</h1>
-      <p class="text-muted">Earn rewards by inviting friends to Puxde</p>
+      <p class="text-muted">Earn rewards by inviting friends to pruxde</p>
     </div>
     
     <div class="stats-grid">
@@ -2976,7 +2976,7 @@ function renderReferralsPage() {
       <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">Your Referral Code</h2>
       <p class="text-muted" style="margin-bottom: 1rem;">Share this code with your friends. They get a bonus and you earn 10% of their first deposit!</p>
       <div class="referral-code">
-        <input type="text" id="referralCodeInput" class="input" value="https://www.Puxde.com/register.html?ref=${user.referralCode}" readonly>
+        <input type="text" id="referralCodeInput" class="input" value="https://www.pruxde.com/register.html?ref=${user.referralCode}" readonly>
         <button class="copy-btn" onclick="copyReferralCode()">
           <svg style="width: 1rem; height: 1rem; display: inline; vertical-align: middle; margin-right: 0.25rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -3123,7 +3123,7 @@ async function handleEditProfile() {
   try {
     const response = await $.ajax({
       type: "GET",
-      url: `https://puxde-render.onrender.com/users/${userFromLS.email}`,
+      url: `https://pruxde-render.onrender.com/users/${userFromLS.email}`,
       dataType: "json",
       timeout: 30000
     });
@@ -3168,7 +3168,7 @@ async function handleEditProfile() {
   try {
     const updateResponse = await $.ajax({
       type: "PUT",
-      url: `https://puxde-render.onrender.com/users/${userInfo._id}/profile/update`,
+      url: `https://pruxde-render.onrender.com/users/${userInfo._id}/profile/update`,
       dataType: "json",
       data: { firstName, lastName, email, mobile, country },
       timeout: 30000
@@ -3329,7 +3329,7 @@ document.getElementById("startCopyTrade").onclick = async () => {
 
 
   try {
-    const res = await fetch("https://puxde-render.onrender.com/transactions/copy-trade/start", {
+    const res = await fetch("https://pruxde-render.onrender.com/transactions/copy-trade/start", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
