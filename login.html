@@ -92,6 +92,9 @@ async function submitLogin(){
             redLogin();
             Swal.fire({icon:'success',text:'Login successful!'});
             // Redirect or further actions
+           setTimeout(() => {
+    window.location.href = "./dashboard/public";
+}, 2000);
         },
         error:function(){
             redLogin();
