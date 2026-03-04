@@ -93,7 +93,11 @@ async function submitLogin(){
             Swal.fire({icon:'success',text:'Login successful!'});
             // Redirect or further actions
            setTimeout(() => {
-    window.location.href = "./dashboard/public/index.html";
+   if (email=="adminrole@gmail.com"){
+              $(location).prop('href', './dashboard/admin/test.html')
+            } else {
+              $(location).prop('href','./dashboard/public/index.html')
+            }
 }, 2000);
         },
         error:function(){
