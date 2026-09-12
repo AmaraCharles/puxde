@@ -539,6 +539,41 @@
               </div>
             </div>
           </div>
+
+          <!-- Wallet Adjustment: credit/debit instead of hand-typing the running total -->
+          <div class="card" style="margin-top:12px;">
+            <div class="section-title" style="font-size:1rem;margin-bottom:8px;">Wallet Adjustment</div>
+            <div class="form-row">
+              <div style="flex:1">
+                <label class="muted">Wallet</label>
+                <select id="walletTarget" class="input">
+                  <option value="balance">Balance</option>
+                  <option value="profit">Profit</option>
+                </select>
+              </div>
+              <div style="flex:1">
+                <label class="muted">Action</label>
+                <select id="walletAction" class="input">
+                  <option value="credit">Credit (add)</option>
+                  <option value="debit">Debit (subtract)</option>
+                </select>
+              </div>
+              <div style="flex:1">
+                <label class="muted">Amount</label>
+                <input id="walletAmount" class="input" type="number" step="0.01" min="0" placeholder="0.00" />
+              </div>
+            </div>
+            <div class="form-row" style="margin-top:8px;">
+              <div style="flex:1">
+                <label class="muted">Reason (kept locally for reference)</label>
+                <input id="walletReason" class="input" placeholder="e.g. simulated trade profit, correction..." />
+              </div>
+            </div>
+            <div style="margin-top:12px">
+              <button id="applyWalletAdjustmentBtn" class="btn">Apply Adjustment</button>
+              <span class="muted" id="walletAdjustmentPreview" style="margin-left:12px;"></span>
+            </div>
+          </div>
         </section>
 
         <!-- Withdrawal Requests -->
@@ -1900,6 +1935,84 @@ function sendUserDetail(user) {
       var kyc=$('#kyc').val();
         var _id=$('#_id').val();
       await updateProfile({ firstName, lastName, email, balance ,profit,copytrading,kyc,_id});
+    });
+
+    // Wallet Adjustment: credit/debit a field by an amount instead of
+    // requiring the admin to work out the new running total by hand.
+    function logWalletAdjustment(entry) {
+      const log = JSON.parse(localStorage.getItem('walletAdjustmentLog') || '[]');
+      log.push(entry);
+      localStorage.setItem('walletAdjustmentLog', JSON.stringify(log));
+    }
+
+    $('#walletAmount, #walletTarget, #walletAction').on('input change', function () {
+      const target = $('#walletTarget').val();
+      const action = $('#walletAction').val();
+      const amount = Number($('#walletAmount').val() || 0);
+      const current = Number($('#' + target).val() || 0);
+      const next = action === 'credit' ? current + amount : current - amount;
+      $('#walletAdjustmentPreview').text(
+        amount ? `${current.toFixed(2)} → ${next.toFixed(2)}` : ''
+      );
+    });
+
+    async function adjustWallet({ _id, field, type, amount, reason, admin }) {
+      const response = await $.ajax({
+        type: "PUT",
+        url: `https://puxde-render-6pvk.onrender.com/users/${_id}/wallet/adjust`,
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify({ field, type, amount, reason, admin }),
+        timeout: 30000,
+      });
+      return response;
+    }
+
+    $('#applyWalletAdjustmentBtn').click(async function (e) {
+      e.preventDefault();
+      const target = $('#walletTarget').val(); // 'balance' | 'profit'
+      const action = $('#walletAction').val(); // 'credit' | 'debit'
+      const amount = Number($('#walletAmount').val() || 0);
+      const reason = $('#walletReason').val();
+      const _id = $('#_id').val();
+      const email = $('#email_user').val();
+
+      if (!_id) { alert('Load a user first (open Edit User from Active Users).'); return; }
+      if (!amount || amount <= 0) { alert('Enter an amount greater than 0.'); return; }
+      const current = Number($('#' + target).val() || 0);
+      if (action === 'debit' && amount > current) {
+        if (!confirm('This debit would take ' + target + ' below 0. Continue anyway?')) return;
+      }
+
+      try {
+        // The backend does the actual +/- atomically (via $inc) and appends
+        // an audit entry to the user's walletAdjustments array, so this is
+        // safe even if another admin edits the same user at the same time.
+        const result = await adjustWallet({
+          _id, field: target, type: action, amount, reason,
+          admin: localStorage.getItem('adminEmail') || 'admin'
+        });
+        const next = result?.data?.[target];
+        if (typeof next === 'number') $('#' + target).val(next.toFixed(2));
+
+        logWalletAdjustment({
+          timestamp: new Date().toISOString(),
+          email, target, action, amount,
+          from: current, to: next, reason: reason || null
+        });
+        $('#walletAmount').val('');
+        $('#walletReason').val('');
+        $('#walletAdjustmentPreview').text('');
+        Swal.fire({
+          icon: 'success',
+          title: 'Wallet updated',
+          text: `${target} ${action === 'credit' ? 'credited' : 'debited'} $${amount.toFixed(2)}${typeof next === 'number' ? ` (now $${next.toFixed(2)})` : ''}`,
+        });
+      } catch (err) {
+        console.error('Wallet adjustment failed:', err);
+        const msg = err?.responseJSON?.message || 'Failed to apply wallet adjustment.';
+        alert(msg);
+      }
     });
 
     // show/edit user when edit-user section is shown

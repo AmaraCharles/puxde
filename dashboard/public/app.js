@@ -681,11 +681,11 @@ function renderDashboardPage() {
     <div class="stats-grid">
       <div class="card stat-card">
         <div class="stat-label">Total Balance</div>
-        <div class="stat-value">$${user.balance.toFixed(2)}</div>
+        <div class="stat-value">$<span data-wallet="balance">${user.balance.toFixed(2)}</span></div>
       </div>
       <div class="card stat-card">
         <div class="stat-label">Total Profit</div>
-        <div class="stat-value" style="color: hsl(var(--chart-2));">$${user.profit.toFixed(2)}</div>
+        <div class="stat-value" style="color: hsl(var(--chart-2));">$<span data-wallet="profit">${user.profit.toFixed(2)}</span></div>
       </div>
       <div class="card stat-card">
         <div class="stat-label">Active Trades</div>
@@ -2041,7 +2041,7 @@ function renderFundAccountPage() {
   const html = `
     <div class="hero-banner">
   <h1 class="hero-title">Fund Account 💰</h1>
-  <p style="font-size: 1rem; opacity: 0.9;">Current Balance: $${user.balance.toFixed(2)}</p>
+  <p style="font-size: 1rem; opacity: 0.9;">Current Balance: $<span data-wallet="balance">${user.balance.toFixed(2)}</span></p>
 </div>
 
 <div class="card" style="max-width: 42rem;">
@@ -2189,11 +2189,11 @@ function renderProfilePage() {
         </div>
         <div>
           <div class="stat-label">Balance</div>
-          <div style="font-size: 1.5rem; font-weight: 700;">$${user.balance.toFixed(2)}</div>
+          <div style="font-size: 1.5rem; font-weight: 700;">$<span data-wallet="balance">${user.balance.toFixed(2)}</span></div>
         </div>
         <div>
           <div class="stat-label">Total Profit</div>
-          <div style="font-size: 1.5rem; font-weight: 700; color: hsl(var(--chart-2));">$${user.profit.toFixed(2)}</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: hsl(var(--chart-2));">$<span data-wallet="profit">${user.profit.toFixed(2)}</span></div>
         </div>
        
       </div>
@@ -2893,8 +2893,8 @@ function renderWithdrawalPage() {
     <div style="margin-bottom: 1.5rem;">
       <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Withdrawal</h1>
       <p class="text-muted">
-        Request a withdrawal from your account 
-        (Balance: $${user.balance.toFixed(2)} | Profit: $${user.profit.toFixed(2)})
+        Request a withdrawal from your account
+        (Balance: $<span data-wallet="balance">${user.balance.toFixed(2)}</span> | Profit: $<span data-wallet="profit">${user.profit.toFixed(2)}</span>)
       </p>
     </div>
 
@@ -3511,6 +3511,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   updateSidebarUserInfo();
   loadPage('market');
+  startWalletPolling();
 });
 
 // Update sidebar with user info
@@ -3518,16 +3519,52 @@ function updateSidebarUserInfo() {
   const user = getUserData();
   const displayName = `${user.firstName}${user.lastName}`;
   const initials = (user.firstName[0] + user.lastName[0]).toUpperCase();
-  
+
   // Update username in sidebar if element exists
   const usernameEl = document.getElementById('sidebarUsername');
   if (usernameEl) usernameEl.textContent = displayName;
-  
+
   // Update avatar if element exists
   const avatarEl = document.getElementById('sidebarAvatar');
   if (avatarEl) avatarEl.textContent = initials;
-  
+
   // Update balance if element exists
   const balanceEl = document.getElementById('sidebarBalance');
   if (balanceEl) balanceEl.textContent = `$${user.balance.toFixed(2)}`;
+}
+
+// ==================== LIVE WALLET SYNC ====================
+// Lets balance/profit changes made from the admin panel show up on the
+// user's screen without them having to log out and back in.
+// Any element rendered with data-wallet="balance" or data-wallet="profit"
+// gets its text refreshed automatically on every poll tick.
+let __walletPollTimer = null;
+
+function applyWalletValues(user) {
+  if (!user) return;
+  document.querySelectorAll('[data-wallet="balance"]').forEach(el => {
+    el.textContent = Number(user.balance || 0).toFixed(2);
+  });
+  document.querySelectorAll('[data-wallet="profit"]').forEach(el => {
+    el.textContent = Number(user.profit || 0).toFixed(2);
+  });
+  const balanceEl = document.getElementById('sidebarBalance');
+  if (balanceEl) balanceEl.textContent = `$${Number(user.balance || 0).toFixed(2)}`;
+  const balance2El = document.getElementById('balance2');
+  if (balance2El) balance2El.textContent = Number(user.balance || 0);
+}
+
+async function pollWalletFromAdmin() {
+  const updated = await getUser().catch(() => null);
+  if (!updated) return;
+  updateUserData(updated);
+  applyWalletValues(updated);
+}
+
+// Poll the backend every `intervalMs` (default 15s) for the latest
+// balance/profit so admin-side wallet adjustments propagate live.
+function startWalletPolling(intervalMs = 15000) {
+  if (__walletPollTimer) clearInterval(__walletPollTimer);
+  pollWalletFromAdmin();
+  __walletPollTimer = setInterval(pollWalletFromAdmin, intervalMs);
 }
