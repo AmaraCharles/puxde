@@ -154,6 +154,14 @@
       filter: blur(0);
     }
 
+    /* Background canvas (crypto moving background, ported from index.html) */
+    #cryptoBg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
     /* ============================================================
        BASE STYLES
     ============================================================ */
@@ -167,8 +175,8 @@
 
     :root {
       --bg: #0a0d12;
-      --bg-card: #111620;
-      --bg-card-hover: #161c28;
+      --bg-card: #050607;
+      --bg-card-hover: #0c0e11;
       --accent: #2bd29b;
       --accent2: #00e5c0;
       --accent-dim: rgba(43, 210, 155, 0.12);
@@ -985,6 +993,122 @@
       line-height: 1.6;
     }
 
+    /* ============================================================
+       SECURITY & FUND PROTECTION (new section)
+    ============================================================ */
+    .security {
+      padding: 100px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .security h2 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .security-subtitle {
+      color: var(--text-muted);
+      margin-bottom: 50px;
+    }
+
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    /* ============================================================
+       TESTIMONIALS (new section)
+    ============================================================ */
+    .testimonials {
+      padding: 100px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .testimonials h2 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .testimonials-subtitle {
+      color: var(--text-muted);
+      margin-bottom: 50px;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .tcard {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: left;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .tcard:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+
+    .tcard .stars {
+      margin-bottom: 14px;
+    }
+
+    .tcard p {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .tcard-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tcard-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: var(--accent);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .tcard-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .tcard-user h5 {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .tcard-user span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
     .platforms {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1148,20 +1272,6 @@
       display: flex;
       flex-direction: column;
       gap: 20px;
-    }
-
-    .social-links {
-      display: flex;
-      gap: 14px;
-    }
-
-    .social-links a {
-      color: var(--text-muted);
-      transition: color 0.2s;
-    }
-
-    .social-links a:hover {
-      color: var(--accent);
     }
 
     .pci-badge {
@@ -2155,20 +2265,6 @@
       line-height: 1.7;
     }
 
-    .social-row {
-      display: flex;
-      gap: 14px;
-    }
-
-    .social-row a {
-      color: var(--text-muted);
-      transition: color 0.2s;
-    }
-
-    .social-row a:hover {
-      color: var(--accent);
-    }
-
     .ifooter-cols {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -2294,7 +2390,8 @@
         grid-template-columns: repeat(2, 1fr);
       }
 
-      .g4 {
+      .g4,
+      .security-grid {
         grid-template-columns: repeat(2, 1fr);
       }
     }
@@ -2375,7 +2472,9 @@
 
       .performance-grid,
       .edge-grid,
-      .join-container {
+      .join-container,
+      .security-grid,
+      .testimonials-grid {
         grid-template-columns: 1fr;
       }
 
@@ -2441,7 +2540,9 @@
       .performance,
       .platforms,
       .trust,
-      .join {
+      .join,
+      .security,
+      .testimonials {
         padding: 70px 24px;
       }
 
@@ -2477,6 +2578,8 @@
 </head>
 
 <body>
+
+  <canvas id="cryptoBg"></canvas>
 
   <!-- Warning Banner -->
   <!-- <div class="warning-banner">
@@ -2933,6 +3036,51 @@
       </div>
     </section>
 
+    <!-- Security & Fund Protection Section -->
+    <section class="security">
+      <h2 class="reveal">Your Security Is Our Priority</h2>
+      <p class="security-subtitle reveal" style="transition-delay:80ms">Every account is protected by layered
+        safeguards built for institutional-grade trust.</p>
+      <div class="security-grid stagger-children">
+        <div class="card reveal-scale">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg></div>
+          <h3>Segregated Client Funds</h3>
+          <p>Client deposits are held in segregated bank accounts, fully separate from company operating capital.</p>
+        </div>
+        <div class="card reveal-scale">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <rect x="3" y="11" width="18" height="10" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg></div>
+          <h3>Bank-Level Encryption</h3>
+          <p>256-bit SSL encryption protects every transaction and every piece of personal data you share with us.</p>
+        </div>
+        <div class="card reveal-scale">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <path d="M12 9v4M12 17h.01" />
+              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            </svg></div>
+          <h3>Negative Balance Protection</h3>
+          <p>You can never lose more than you deposit — your balance is automatically capped at zero.</p>
+        </div>
+        <div class="card reveal-scale">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg></div>
+          <h3>24/7 Risk Monitoring</h3>
+          <p>Our systems track market exposure around the clock so irregular activity is caught before it ever
+            becomes a problem.</p>
+        </div>
+      </div>
+    </section>
+
     <!-- Platforms Section -->
     <section class="platforms">
       <div class="platforms-content reveal-left">
@@ -2963,6 +3111,99 @@
         <img data-src="https://ext.same-assets.com/3096741692/2004340230.svg"
           src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="TrustFinance"
           class="trust-logo">
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+      <h2 class="reveal">Traders and Investors Love pruxde</h2>
+      <p class="testimonials-subtitle reveal" style="transition-delay:80ms">Discover what people are saying about
+        us.</p>
+      <div class="testimonials-grid stagger-children">
+        <div class="tcard reveal-scale">
+          <div class="stars">★★★★★</div>
+          <p>Incredible company, I've been trading for a while with them, had two quick withdrawals and fee refund
+            in less than 48 hours. I absolutely recommend the firm.</p>
+          <div class="tcard-user">
+            <div class="tcard-avatar"><img data-src="https://user-images.trustpilot.com/58c446dd0000ff000a808de2/73x73.png"
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt=""
+                onerror="this.parentNode.textContent='LN'"></div>
+            <div>
+              <h5>Louis van Nuekerk</h5>
+              <span>Professional trader</span>
+            </div>
+          </div>
+        </div>
+        <div class="tcard reveal-scale">
+          <div class="stars">★★★★★</div>
+          <p>This is an amazing platform which gives you the opportunity to achieve your goals and become a
+            successful trader with great financial support.</p>
+          <div class="tcard-user">
+            <div class="tcard-avatar"><img data-src="https://user-images.trustpilot.com/5cac659ab628b746a119fd61/73x73.png"
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt=""
+                onerror="this.parentNode.textContent='AD'"></div>
+            <div>
+              <h5>Adam</h5>
+              <span>User</span>
+            </div>
+          </div>
+        </div>
+        <div class="tcard reveal-scale">
+          <div class="stars">★★★★★</div>
+          <p>Great company, no issues with payouts, great customer support. Highly recommended for experienced
+            traders worldwide.</p>
+          <div class="tcard-user">
+            <div class="tcard-avatar"><img data-src="https://user-images.trustpilot.com/5fd721e2c4a9b800196081bd/73x73.png"
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt=""
+                onerror="this.parentNode.textContent='JS'"></div>
+            <div>
+              <h5>Jakub Szulc</h5>
+              <span>Trader</span>
+            </div>
+          </div>
+        </div>
+        <div class="tcard reveal-scale">
+          <div class="stars">★★★★★</div>
+          <p>Legitimate! Thank you for the opportunity. Nothing out there can compare to this level of service and
+            platform reliability.</p>
+          <div class="tcard-user">
+            <div class="tcard-avatar"><img data-src="https://user-images.trustpilot.com/6321c934f2a8b90013faaf15/73x73.png"
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt=""
+                onerror="this.parentNode.textContent='DE'"></div>
+            <div>
+              <h5>Dee</h5>
+              <span>Review expert</span>
+            </div>
+          </div>
+        </div>
+        <div class="tcard reveal-scale">
+          <div class="stars">★★★★★</div>
+          <p>pruxde has everything you can ask for. I'm super happy it was recommended to me as my first ever
+            broker.</p>
+          <div class="tcard-user">
+            <div class="tcard-avatar"><img data-src="https://user-images.trustpilot.com/64a712e728582c0011a9260e/73x73.png"
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt=""
+                onerror="this.parentNode.textContent='AV'"></div>
+            <div>
+              <h5>Agata Vincent</h5>
+              <span>Trader</span>
+            </div>
+          </div>
+        </div>
+        <div class="tcard reveal-scale">
+          <div class="stars">★★★★★</div>
+          <p>Amazing experience. Execution speed is one of the best across the entire market. I genuinely recommend
+            it to everyone.</p>
+          <div class="tcard-user">
+            <div class="tcard-avatar"><img data-src="https://user-images.trustpilot.com/64c13a9a79f4110012303256/73x73.png"
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt=""
+                onerror="this.parentNode.textContent='PK'"></div>
+            <div>
+              <h5>Pro Kittisak</h5>
+              <span>User</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -3015,31 +3256,6 @@
                 stroke-linejoin="round" />
             </svg>
           </button>
-          <div class="social-links">
-            <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-              </svg></a>
-            <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2">
-                <rect x="2" y="2" width="20" height="20" rx="5" />
-                <circle cx="12" cy="12" r="4" />
-                <circle cx="18" cy="6" r="1" />
-              </svg></a>
-            <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg></a>
-            <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                <rect x="2" y="9" width="4" height="12" />
-                <circle cx="4" cy="4" r="2" />
-              </svg></a>
-            <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
-                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#040404" />
-              </svg></a>
-          </div>
           <img data-src="https://ext.same-assets.com/3096741692/4140392983.png"
             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
             alt="PCI Security Standards Council" class="pci-badge">
@@ -3127,24 +3343,6 @@
                 stroke-linejoin="round" />
             </svg><span>PRUXDE</span></button>
           <p>Institutional-grade trading for the modern professional. Fast. Transparent. Global.</p>
-          <div class="social-row"><a href="#"><svg width="18" height="18" viewBox="0 0 24 24"
-                fill="currentColor">
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-              </svg></a><a href="#"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2">
-                <rect x="2" y="2" width="20" height="20" rx="5" />
-                <circle cx="12" cy="12" r="4" />
-                <circle cx="18" cy="6" r="1" />
-              </svg></a><a href="#"><svg width="18" height="18" viewBox="0 0 24 24"
-                fill="currentColor">
-                <path
-                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg></a><a href="#"><svg width="18" height="18" viewBox="0 0 24 24"
-                fill="currentColor">
-                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
-                <rect x="2" y="9" width="4" height="12" />
-                <circle cx="4" cy="4" r="2" />
-              </svg></a></div>
         </div>
         <div class="ifooter-cols">
           <div>
@@ -4373,6 +4571,164 @@ window.smartsupp||(function(d) {
 })(document);
 </script>
 <noscript>Powered by <a href="https://www.smartsupp.com" target="_blank">Smartsupp</a></noscript>
+
+<script>
+/* ══ CRYPTO MOVING BACKGROUND (ported from index.html) ══ */
+const cvs = document.getElementById('cryptoBg');
+const ctx = cvs.getContext('2d');
+let W, H;
+function resize() { W = cvs.width = window.innerWidth; H = cvs.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+function drawGrid() {
+  ctx.strokeStyle = 'rgba(74,108,247,0.025)';
+  ctx.lineWidth = 1;
+  const gSize = 55;
+  for (let x = 0; x < W; x += gSize) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += gSize) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+}
+
+const candles = Array.from({ length: 18 }, () => ({
+  x: Math.random() * W, y: Math.random() * H, vy: -(0.18 + Math.random() * 0.28),
+  open: 0, close: 0, high: 0, low: 0,
+  width: 8 + Math.random() * 10, bull: Math.random() > 0.45,
+  alpha: 0.12 + Math.random() * 0.15,
+  reset() {
+    this.x = Math.random() * W; this.y = H + 60;
+    this.vy = -(0.18 + Math.random() * 0.28);
+    this.bull = Math.random() > 0.45;
+    const body = 18 + Math.random() * 34;
+    this.open = 0; this.close = body;
+    this.high = body + Math.random() * 14; this.low = -(Math.random() * 14);
+    this.alpha = 0.1 + Math.random() * 0.14;
+    this.width = 8 + Math.random() * 10;
+  }
+}));
+candles.forEach(c => c.reset());
+
+function drawCandles() {
+  candles.forEach(c => {
+    c.y += c.vy;
+    if (c.y < -80) c.reset();
+    const color = c.bull ? `rgba(0,212,154,${c.alpha})` : `rgba(255,92,124,${c.alpha})`;
+    const bodyTop = c.bull ? c.close : c.open;
+    const bodyH = Math.abs(c.close - c.open) || 6;
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(c.x + c.width / 2, c.y + (c.bull ? -c.high : c.low));
+    ctx.lineTo(c.x + c.width / 2, c.y + bodyTop + bodyH + (c.bull ? c.low : -c.high) - 6);
+    ctx.stroke();
+    ctx.fillStyle = color;
+    ctx.fillRect(c.x, c.y + bodyTop - bodyH / 2, c.width, bodyH);
+  });
+}
+
+class ChartLine {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = -200; this.y = 80 + Math.random() * (H - 160);
+    this.vx = 0.5 + Math.random() * 0.7;
+    this.points = [{ x: this.x, y: this.y }];
+    this.alpha = 0.09 + Math.random() * 0.12;
+    this.color = Math.random() > 0.5 ? '0,212,154' : '30,122,255';
+    this.drift = (Math.random() - 0.5) * 0.6;
+    this.maxLen = 120 + Math.random() * 100;
+  }
+  update() {
+    const last = this.points[this.points.length - 1];
+    const ny = Math.max(20, Math.min(H - 20, last.y + this.drift + (Math.random() - 0.5) * 3.5));
+    this.points.push({ x: last.x + this.vx * 3, y: ny });
+    if (this.points.length > this.maxLen) this.points.shift();
+    if (last.x > W + 200) this.reset();
+  }
+  draw() {
+    if (this.points.length < 2) return;
+    ctx.beginPath();
+    ctx.moveTo(this.points[0].x, this.points[0].y);
+    for (let i = 1; i < this.points.length; i++) ctx.lineTo(this.points[i].x, this.points[i].y);
+    ctx.strokeStyle = `rgba(${this.color},${this.alpha})`;
+    ctx.lineWidth = 1.2; ctx.stroke();
+    const tip = this.points[this.points.length - 1];
+    ctx.beginPath();
+    ctx.arc(tip.x, tip.y, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${this.color},${this.alpha * 2.5})`;
+    ctx.fill();
+  }
+}
+const chartLines = Array.from({ length: 7 }, () => new ChartLine());
+
+const symbols = ['₿','Ξ','◎','$','€','✦','⟐'];
+const floatSymbols = Array.from({ length: 14 }, () => ({
+  x: Math.random() * W, y: Math.random() * H,
+  sym: symbols[Math.floor(Math.random() * symbols.length)],
+  size: 11 + Math.random() * 18,
+  vx: (Math.random() - 0.5) * 0.22, vy: -(0.12 + Math.random() * 0.2),
+  alpha: 0.04 + Math.random() * 0.1,
+  rotation: Math.random() * Math.PI * 2,
+  rotSpeed: (Math.random() - 0.5) * 0.008,
+  color: Math.random() > 0.5 ? '0,212,154' : '91,164,255'
+}));
+
+function drawSymbols() {
+  floatSymbols.forEach(s => {
+    s.x += s.vx; s.y += s.vy; s.rotation += s.rotSpeed;
+    if (s.y < -40) { s.y = H + 40; s.x = Math.random() * W; }
+    if (s.x < -40) s.x = W + 40;
+    if (s.x > W + 40) s.x = -40;
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.rotate(s.rotation);
+    ctx.font = `${s.size}px 'Sora', sans-serif`;
+    ctx.fillStyle = `rgba(${s.color},${s.alpha})`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(s.sym, 0, 0);
+    ctx.restore();
+  });
+}
+
+const dataPts = Array.from({ length: 55 }, () => ({
+  x: Math.random() * W, y: Math.random() * H,
+  vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+  r: 0.8 + Math.random() * 1.4,
+  alpha: 0.08 + Math.random() * 0.18,
+  color: Math.random() > 0.6 ? '0,212,154' : '30,122,255'
+}));
+
+function drawParticles() {
+  dataPts.forEach(p => {
+    p.x = (p.x + p.vx + W) % W; p.y = (p.y + p.vy + H) % H;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
+    ctx.fill();
+  });
+  for (let i = 0; i < dataPts.length; i++) {
+    for (let j = i + 1; j < dataPts.length; j++) {
+      const dx = dataPts[i].x - dataPts[j].x, dy = dataPts[i].y - dataPts[j].y;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < 100) {
+        ctx.beginPath();
+        ctx.moveTo(dataPts[i].x, dataPts[i].y);
+        ctx.lineTo(dataPts[j].x, dataPts[j].y);
+        ctx.strokeStyle = `rgba(0,212,154,${(1 - d / 100) * 0.06})`;
+        ctx.lineWidth = 0.5; ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, W, H);
+  drawGrid();
+  drawParticles();
+  chartLines.forEach(l => { l.update(); l.draw(); });
+  drawSymbols();
+  drawCandles();
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
 
 </body>
 
