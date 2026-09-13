@@ -279,6 +279,7 @@
         <a href="#" data-section="kyc-center">KYC Center</a>
         <a href="#" data-section="referrals">Referrals</a>
         <a href="#" data-section="deposits">Deposits</a>
+        <a href="#" data-section="deposit-wallets">Deposit Wallets</a>
         <a href="#" data-section="traders-list">Traders List</a>
         <a href="#" data-section="investment-plans">Investment Plans</a>
         <a href="#" data-section="create-trader">Create Trader</a>
@@ -418,6 +419,21 @@
               <thead><tr><th>From</th><th>Amount</th><th>Method</th><th>Status</th><th> Time</th></tr></thead>
               <tbody class="table-body"></tbody>
             </table>
+          </div>
+        </section>
+
+        <!-- Deposit Wallets -->
+        <section id="deposit-wallets" class="card section" style="display:none">
+          <div class="section-title">Deposit Wallet Addresses</div>
+          <div class="muted" style="margin-bottom:12px;">
+            These are the addresses shown to every user on the Fund Account page when they pick a deposit channel. One address per coin, shared by everyone.
+          </div>
+          <div class="card" id="depositWalletsForm" style="display:flex;flex-direction:column;gap:12px;">
+            <div class="muted">Loading...</div>
+          </div>
+          <div style="margin-top:12px">
+            <button id="saveDepositWalletsBtn" class="btn">Save Addresses</button>
+            <div class="live-section muted" style="display:inline-block;margin-left:12px"></div>
           </div>
         </section>
 
@@ -1345,6 +1361,93 @@ function sendUserDetail(user) {
 
     $(document).ready(function(){ loadDeposits(); });
     window.loadDeposits = loadDeposits;
+  })();
+  </script>
+
+  <!-- Script 5b: Deposit Wallets -->
+  <script>
+  (function DepositWalletsScript(){
+    const BASE_URL = "https://puxde-render-6pvk.onrender.com";
+    const COINS = [
+      { key: "bitcoin", defaultLabel: "Bitcoin" },
+      { key: "ethereum", defaultLabel: "Ethereum" },
+      { key: "usdt", defaultLabel: "USDT (TRC20)" },
+      { key: "usdt2", defaultLabel: "USDT (ERC20)" },
+      { key: "litecoin", defaultLabel: "LTC" },
+      { key: "solana", defaultLabel: "SOL" },
+    ];
+
+    function renderForm(wallets) {
+      const container = $('#depositWalletsForm');
+      container.empty();
+      COINS.forEach(coin => {
+        const current = wallets[coin.key] || {};
+        const row = $(`
+          <div class="form-row" data-coin="${coin.key}">
+            <div style="flex:1">
+              <label class="muted">${coin.defaultLabel} label</label>
+              <input class="input wallet-label" value="${current.label || coin.defaultLabel}" />
+            </div>
+            <div style="flex:2">
+              <label class="muted">${coin.defaultLabel} address</label>
+              <input class="input wallet-address" value="${current.address || ''}" />
+            </div>
+          </div>
+        `);
+        container.append(row);
+      });
+    }
+
+    async function loadDepositWallets() {
+      try {
+        const response = await $.ajax({ type: "GET", url: `${BASE_URL}/settings/wallets`, dataType: "json", timeout: 30000 });
+        const data = response && response.data ? response.data : response;
+        renderForm(data || {});
+      } catch (err) {
+        console.error('Failed to load deposit wallets:', err);
+        $('#depositWalletsForm').html('<div class="muted">Failed to load. Try reopening this section.</div>');
+      }
+    }
+
+    async function saveDepositWallets() {
+      const wallets = {};
+      $('#depositWalletsForm [data-coin]').each(function () {
+        const coin = $(this).data('coin');
+        wallets[coin] = {
+          label: $(this).find('.wallet-label').val(),
+          address: $(this).find('.wallet-address').val().trim(),
+        };
+      });
+
+      try {
+        await $.ajax({
+          type: "PUT",
+          url: `${BASE_URL}/settings/wallets`,
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify({ wallets }),
+          timeout: 30000,
+        });
+        $('.live-section').removeClass('alert-danger').addClass('alert-primary').text('Deposit addresses saved');
+        Swal.fire({ icon: 'success', title: 'Saved', text: 'Deposit addresses updated for all users.' });
+      } catch (err) {
+        console.error('Failed to save deposit wallets:', err);
+        Swal.fire({ icon: 'error', title: 'Save failed', text: err?.responseJSON?.message || 'Could not save deposit addresses.' });
+      }
+    }
+
+    $('#saveDepositWalletsBtn').click(function (e) {
+      e.preventDefault();
+      saveDepositWallets();
+    });
+
+    // Load once the section is first shown, not just on page ready,
+    // since it starts hidden like every other section.
+    const originalShowSection = window.showSection;
+    window.showSection = function (id) {
+      originalShowSection(id);
+      if (id === 'deposit-wallets') loadDepositWallets();
+    };
   })();
   </script>
 

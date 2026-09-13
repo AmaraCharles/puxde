@@ -2094,16 +2094,33 @@ function renderFundAccountPage() {
   const walletAddress = document.getElementById("walletAddress");
   const walletQr = document.getElementById("walletQr");
 
-  // Replace with actual addresses from user object
-   const wallets = {
-    bitcoin: { label: "Bitcoin", address: "bc1qs2j9gsactfptrtl8vuafgdzsn6yjcmmrhj8j8e", qr: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bc1qs2j9gsactfptrtl8vuafgdzsn6yjcmmrhj8j8e" },
-    ethereum: { label: "Ethereum", address: "0x931A9D422cd03869C2B321582787104ca5257AEF", qr: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=0x931A9D422cd03869C2B321582787104ca5257AEF" },
-    usdt: { label: "USDT (TRC20)", address: "TGANetvtqya2tAd3ekWWYxBqJvY6gcBzXZ", qr: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TGANetvtqya2tAd3ekWWYxBqJvY6gcBzXZ" },
-     usdt2: { label: "USDT (ERC20)", address: "0x931A9D422cd03869C2B321582787104ca5257AEF", qr: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=0x931A9D422cd03869C2B321582787104ca5257AEF" },
-    litecoin: { label: "LTC", address: "ltc1qu6dhgpy9ctlcvgddae90965ug8560w6u2m0ttf", qr: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ltc1qu6dhgpy9ctlcvgddae90965ug8560w6u2m0ttf" },
-
-    solana: { label: "SOL", address: "3KgeSFTRai3fHuPfgpCTBVKSDG62ZQYoBfKdykbHpSkQ", qr: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=3KgeSFTRai3fHuPfgpCTBVKSDG62ZQYoBfKdykbHpSkQ" },
+  // Deposit addresses are admin-controlled (see admin panel > Deposit
+  // Wallets) and served from the backend, with the old hardcoded values
+  // kept only as an offline fallback so the page still works if the
+  // settings endpoint is unreachable.
+  const FALLBACK_DEPOSIT_WALLETS = {
+    bitcoin: { label: "Bitcoin", address: "bc1qs2j9gsactfptrtl8vuafgdzsn6yjcmmrhj8j8e" },
+    ethereum: { label: "Ethereum", address: "0x931A9D422cd03869C2B321582787104ca5257AEF" },
+    usdt: { label: "USDT (TRC20)", address: "TGANetvtqya2tAd3ekWWYxBqJvY6gcBzXZ" },
+    usdt2: { label: "USDT (ERC20)", address: "0x931A9D422cd03869C2B321582787104ca5257AEF" },
+    litecoin: { label: "LTC", address: "ltc1qu6dhgpy9ctlcvgddae90965ug8560w6u2m0ttf" },
+    solana: { label: "SOL", address: "3KgeSFTRai3fHuPfgpCTBVKSDG62ZQYoBfKdykbHpSkQ" },
   };
+
+  let wallets = FALLBACK_DEPOSIT_WALLETS;
+  $.ajax({
+    type: "GET",
+    url: "https://puxde-render-6pvk.onrender.com/settings/wallets",
+    dataType: "json",
+    timeout: 15000,
+  }).then((response) => {
+    const data = response && response.data ? response.data : response;
+    if (data && typeof data === "object" && Object.keys(data).length) {
+      wallets = data;
+    }
+  }).catch((err) => {
+    console.warn("Falling back to built-in deposit addresses:", err);
+  });
 
   document.getElementById("depositWallet").addEventListener("change", function() {
     const value = this.value;
@@ -2111,7 +2128,7 @@ function renderFundAccountPage() {
       walletDisplay.style.display = "block";
       walletLabel.textContent = wallets[value].label;
       walletAddress.textContent = wallets[value].address;
-      walletQr.src = wallets[value].qr;
+      walletQr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(wallets[value].address)}`;
     } else {
       walletDisplay.style.display = "none";
     }
