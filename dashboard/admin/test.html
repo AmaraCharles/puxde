@@ -5,6 +5,35 @@
   <title>Admin Dashboard · SmartGen</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // This page is only usable by whoever holds a valid admin token
+    // (set on login in login.html). Attach it to every request this page
+    // makes to the API — protected admin routes reject anything else with
+    // 401/403, and public routes just ignore the extra header.
+    (function attachAdminAuth() {
+      function adminAuthHeader() {
+        const token = localStorage.getItem('adminToken');
+        return token ? { Authorization: `Bearer ${token}` } : {};
+      }
+      $.ajaxSetup({
+        beforeSend: function (xhr) {
+          const header = adminAuthHeader();
+          if (header.Authorization) xhr.setRequestHeader('Authorization', header.Authorization);
+        },
+      });
+      window.adminAuthHeader = adminAuthHeader;
+      window.addEventListener('ajaxAuthExpired', function () {
+        localStorage.removeItem('adminToken');
+        Swal.fire({ icon: 'error', title: 'Session expired', text: 'Please log in again.' })
+          .then(() => { $(location).prop('href', '../../login.html'); });
+      });
+      $(document).ajaxError(function (event, jqXHR) {
+        if (jqXHR.status === 401 || jqXHR.status === 403) {
+          window.dispatchEvent(new Event('ajaxAuthExpired'));
+        }
+      });
+    })();
+  </script>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -1066,7 +1095,9 @@ async function rejectDocument(userId) {
 }
 async function fetchImages() {
       try {
-        const response = await fetch('https://puxde-render-6pvk.onrender.com/auth/kyc/fetch-images');
+        const response = await fetch('https://puxde-render-6pvk.onrender.com/auth/kyc/fetch-images', {
+          headers: window.adminAuthHeader ? window.adminAuthHeader() : {},
+        });
         if (response.ok) {
           const images = await response.json();
           displayImages(images);
@@ -1082,6 +1113,7 @@ async function deleteImage(imageId) {
   try {
     const response = await fetch(`https://puxde-render-6pvk.onrender.com/auth/kyc/delete-image/${imageId}`, {
       method: "DELETE",
+      headers: window.adminAuthHeader ? window.adminAuthHeader() : {},
     });
 
     const result = await response.json();
@@ -1148,7 +1180,9 @@ function displayImages(images) {
 
     async function fetchImages() {
       try {
-        const response = await fetch('https://puxde-render-6pvk.onrender.com/auth/kyc/fetch-images');
+        const response = await fetch('https://puxde-render-6pvk.onrender.com/auth/kyc/fetch-images', {
+          headers: window.adminAuthHeader ? window.adminAuthHeader() : {},
+        });
         if (response.ok) {
           const images = await response.json();
           displayImages(images);
@@ -1419,12 +1453,19 @@ function sendUserDetail(user) {
         };
       });
 
+      const adminToken = localStorage.getItem('adminToken');
+      if (!adminToken) {
+        Swal.fire({ icon: 'error', title: 'Not signed in', text: 'Your admin session expired. Please log in again.' });
+        return $(location).prop('href', '../../login.html');
+      }
+
       try {
         await $.ajax({
           type: "PUT",
           url: `${BASE_URL}/settings/wallets`,
           dataType: "json",
           contentType: "application/json",
+          headers: { Authorization: `Bearer ${adminToken}` },
           data: JSON.stringify({ wallets }),
           timeout: 30000,
         });
@@ -1432,6 +1473,11 @@ function sendUserDetail(user) {
         Swal.fire({ icon: 'success', title: 'Saved', text: 'Deposit addresses updated for all users.' });
       } catch (err) {
         console.error('Failed to save deposit wallets:', err);
+        if (err?.status === 401 || err?.status === 403) {
+          Swal.fire({ icon: 'error', title: 'Session expired', text: 'Please log in again.' });
+          localStorage.removeItem('adminToken');
+          return $(location).prop('href', '../../login.html');
+        }
         Swal.fire({ icon: 'error', title: 'Save failed', text: err?.responseJSON?.message || 'Could not save deposit addresses.' });
       }
     }

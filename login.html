@@ -94,6 +94,9 @@ async function submitLogin(){
             // Redirect or further actions
            setTimeout(() => {
    if (email=="adminrole@gmail.com"){
+              if (data.token) {
+                localStorage.setItem("adminToken", data.token);
+              }
               $(location).prop('href', './dashboard/admin/test.html')
             } else {
                 localStorage.setItem("userData",JSON.stringify(data.data))
